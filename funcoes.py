@@ -26,7 +26,8 @@ def tratar_categoria(nome_categoria):
     return "sem categoria"
  
  nome_categoria = nome_categoria.lower().strip()
-
+ 
+ nome_categoria = nome_categoria.replace("_", " ")
 
  nome_categoria = re.sub(
 
@@ -41,27 +42,32 @@ def tratar_categoria(nome_categoria):
 
 #SPRINT 3 LIMPEZA DE NULOS
 
+#Optei pelo descarte dos registros com campos nulos, pois representavam fração muito pequena do dataset,
+#Foram identificados apenas 8 campos nulos  em 2 produtos específicos.
+#mantendo assim a qualidade e integridade dos dados para treinamento
+
 def tratar_dim_produto(produto):
     
     dimensoes = [
-        "product_weight_g", 
-        "product_length_cm", 
-        "product_height_cm", 
+        "product_weight_g",
+        "product_length_cm",
+        "product_height_cm",
         "product_width_cm"
     ]
 
-    campos_corrigidos = 0;     
-    
-        
+    nulos_dim =0
+
     for dim in dimensoes:
+       
+        
         valor = produto.get(dim)
-        
-        
-        if not valor or valor.strip() == "":
-            produto[dim] = 0  
-            campos_corrigidos += 1
-            
-    return campos_corrigidos
+
+        if valor is None or (isinstance(valor, str) and valor.strip() == ""):
+            nulos_dim += 1
+
+    return nulos_dim
+
+
 
 #SPRINT 4 REGRAS de NEGOCIO e DATAS
 
