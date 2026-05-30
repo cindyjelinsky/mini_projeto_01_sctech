@@ -77,14 +77,17 @@ def analise_hipotese_entrega(pedido):
     status = pedido.get("order_status")
     
     
-    if data_entrega and data_entrega.strip() != "":
-        return "entregue"
+    if not data_entrega and data_entrega.strip() == "":
+        return status
         
    
-    else:
-        return status
+    return "entregue"
     
-
+def valida_hipotese(total_cancelados,total_outros_status):
+    if total_cancelados < total_outros_status:
+        return "Hipótese Invalidada"
+    
+    return "Hipótese Validada"
 
 
 def formatar_data_br(string_data):
@@ -102,3 +105,36 @@ def formatar_data_br(string_data):
         
     except ValueError:
         return string_data
+    
+
+def exportar_relatorio_txt(
+    caminho_saida,
+    linhas_produtos,
+    linhas_pedidos,
+    nulos_categoria,
+    nulos_dimensoes,
+    produtos_descartados,
+    total_cancelados,
+    nulos_em_transito,
+    nulos_processando,
+    nulos_outros,
+    total_nulos,
+    total_outros_status
+):
+    
+    with open(caminho_saida, "w", encoding="utf-8") as arquivo:
+        arquivo.write("====== RELATÓRIO FINAL ======\n")
+        arquivo.write(f"Total de linhas processadas: {linhas_pedidos+linhas_produtos}\n")
+        arquivo.write(f"Total de Registros Nulos Corrigidos: {total_nulos}\n")
+        arquivo.write(f"  |__ Nulos por Categoria (Tratados): {nulos_categoria}\n")
+        arquivo.write(f"  |__ Campos Nulos por Dimensão (Detectados): {nulos_dimensoes}\n")
+        arquivo.write(f"Total de Linhas descartadas: {produtos_descartados}\n\n")
+        
+        arquivo.write("------ Validação Hipótese ------\n")
+        arquivo.write(f"Total de pedidos sem data de entrega CANCELADOS: {total_cancelados}\n")
+        arquivo.write(f"Total de pedidos sem data de entrega OUTROS STATUS: {total_outros_status}\n")
+        arquivo.write(f"  |__ Em Trânsito (shipped): {nulos_em_transito}\n")
+        arquivo.write(f"  |__ Processando (processing): {nulos_processando}\n")
+        arquivo.write(f"  |__ Outros Status: {nulos_outros}\n\n")
+        arquivo.write(valida_hipotese(total_cancelados,total_outros_status))
+        

@@ -3,7 +3,9 @@ from funcoes import (
     tratar_categoria,
     tratar_dim_produto,
     analise_hipotese_entrega,
-    formatar_data_br
+    formatar_data_br,
+    exportar_relatorio_txt,
+    valida_hipotese
     )
 
 
@@ -76,37 +78,27 @@ def main():
     for pedido in dados_ordens:
         
        
-        resultado = analise_hipotese_entrega(pedido)
-        
-        
-        if resultado == "entregue":
-            pass 
-            
-        elif resultado == "canceled":
-           total_cancelados += 1
-            
-        elif resultado == "shipped":
-           
-            nulos_em_transito += 1  
+        resultado_status = analise_hipotese_entrega(pedido)
 
-        elif resultado == "processing" or resultado == "approved":
-            
-            nulos_processando += 1  
-            
-        else:
+        if resultado_status == "canceled":
+            total_cancelados += 1
+        elif resultado_status == "shipped":
+            nulos_em_transito += 1
+        elif resultado_status == "processing":
+            nulos_processando += 1
+        elif resultado_status != "entregue":
             nulos_outros += 1
 
         data_original = pedido.get("order_approved_at")
         pedido["order_approved_at"] = formatar_data_br(data_original)
 
-        
     
-
     # RELATORIO
 
 
     total_nulos = nulos_categoria + nulos_dimensoes
     total_outros_status = nulos_em_transito + nulos_processando + nulos_outros
+    
     
     print("\n======RELATÓRIO FINAL======")  
     
@@ -118,7 +110,26 @@ def main():
     print("\n------Validação Hipótese------")
     print("Total de pedidos sem data de entrega CANCELADOS: ",total_cancelados)
     print("Total de pedidos sem data de entrega OUTROS STATUS: ", total_outros_status )
-    print("Hipótese Invalidada")
+    print(valida_hipotese(total_cancelados,total_outros_status))
+
+
+    exportar_relatorio_txt(
+        "relatorio.txt",
+        linhas_produtos,
+        linhas_pedidos,
+        nulos_categoria,
+        nulos_dimensoes,
+        produtos_descartados,
+        total_cancelados,
+        nulos_em_transito,
+        nulos_processando,
+        nulos_outros,
+        total_nulos,
+        total_outros_status
+
+    )
+    
+    print("\nRelatório detalhado exportado para 'relatorio.txt'")
     
    
 if __name__ == "__main__":

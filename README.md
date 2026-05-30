@@ -15,6 +15,7 @@ O pipeline executa as seguintes etapas de limpeza:
 * **Limpeza de Categorias:** Padronização dos nomes de categorias para letras minúsculas, remoção de caracteres especiais/pontuações via Expressões Regulares (Regex), substituição de delimitadores (`_`) por espaços legíveis e tratamento de valores nulos para a constante `"sem categoria"`.
 * **Tratamento de Dimensões Físicas:** Identificação de registros com dados de peso ou dimensões ausentes. Foi aplicada a estratégia de **descarte por exclusão**, eliminando os registros incompletos após constatar que a inconsistência afetava apenas 2 produtos (8 campos nulos no total), representando um impacto mínimo na base.
 * **Análise de Hipótese Logística:** Verificação de uma hipótese de negócio da diretoria sobre pedidos sem data de entrega. O pipeline separa e contabiliza esses pedidos por status, validando ou invalidando a suposição inicial com dados concretos.
+* **Relatório Completo em .txt:** Além do relatório resumido no terminal, também foi incluído um relatório completo exportado em .txt
 
 
 ## Guia de Execução
